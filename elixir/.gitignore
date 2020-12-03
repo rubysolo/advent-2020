@@ -1,0 +1,10 @@
+*.ez
+/.fetch
+/_build/
+/cover/
+/deps/
+/doc/
+/tmp
+advent_of_code-*.tar
+config/secret.exs
+erl_crash.dump
