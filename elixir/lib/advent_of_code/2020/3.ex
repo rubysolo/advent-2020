@@ -6,7 +6,7 @@ defmodule AdventOfCode.Y2020.D3 do
 
   def solution1(input, slope \\ {3, 1})
 
-  def solution1(input, {right, 2}) do
+  def solution1(input, {1, 2}) do
     [first_row, _next_row | rest] =
       input
       |> Enum.map(&String.graphemes/1)
