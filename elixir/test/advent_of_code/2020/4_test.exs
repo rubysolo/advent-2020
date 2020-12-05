@@ -29,7 +29,7 @@ defmodule AdventOfCode.Y2020.D4Test do
     end
 
     test "works for real input" do
-      assert D4.solution2(D4.real_input) == 115
+      assert D4.solution2(D4.real_input) == 114
     end
   end
 end
