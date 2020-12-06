@@ -52,7 +52,6 @@ defmodule AdventOfCode.Y2020.D5 do
   As a sanity check, look through your list of boarding passes. What is the highest seat ID on a boarding pass?
   """
   alias AdventOfCode.Input
-  use Bitwise
   @real_input Input.lines("2020/5.txt")
 
   def solution1(input) do
