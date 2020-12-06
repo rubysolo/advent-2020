@@ -65,18 +65,14 @@ defmodule AdventOfCode.Y2020.D5 do
     code
     |> String.graphemes()
     |> Enum.map(&to_bit/1)
-    |> Enum.reduce(0, &add_and_shift/2)
-    |> (fn r -> r >>> 1 end).()
+    |> Enum.join("")
+    |> String.to_integer(2)
   end
 
   def to_bit("F"), do: 0
   def to_bit("B"), do: 1
   def to_bit("L"), do: 0
   def to_bit("R"), do: 1
-
-  def add_and_shift(bit, acc) do
-    (acc + bit) <<< 1
-  end
 
   @doc """
   Ding! The "fasten seat belt" signs have turned on. Time to find your seat.
