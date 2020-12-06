@@ -63,9 +63,8 @@ defmodule AdventOfCode.Y2020.D5 do
 
   def seat_number(code) do
     code
-    |> String.graphemes()
-    |> Enum.map(&to_bit/1)
-    |> Enum.join("")
+    |> String.replace(~r/[F|L]/, "0")
+    |> String.replace(~r/[B|R]/, "1")
     |> String.to_integer(2)
   end
 
