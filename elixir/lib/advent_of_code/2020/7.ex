@@ -40,6 +40,58 @@ defmodule AdventOfCode.Y2020.D7 do
   sure you get all of it.)
   """
 
+  defmodule Parser.Helpers do
+    import NimbleParsec
+
+    def word, do: utf8_string([?a..?z], min: 1)
+
+    def color do
+      word()
+      |> concat(
+        string(" ")
+        |> times(min: 1)
+        |> replace(" ")
+      )
+      |> concat(word())
+      |> post_traverse({:list_to_color, []})
+    end
+  end
+
+  defmodule Parser do
+    import NimbleParsec
+    import Parser.Helpers
+
+    defp list_to_color(_rest, tokens, context, _line, _offset) do
+      {tokens |> Enum.reverse() |> Enum.join("") |> List.wrap, context}
+    end
+
+    container =
+      parsec(:color)
+      |> ignore(string(" bags contain "))
+
+    bag_count =
+      integer(min: 1)
+      |> ignore(string(" "))
+      |> parsec(:color)
+      |> ignore(string(" bag"))
+      |> ignore(optional(string("s")))
+      |> ignore(optional(string(", ")))
+      |> wrap()
+
+    no_bags =
+      string("no other bags")
+
+    contained =
+      choice([bag_count, no_bags])
+
+    defparsec :color, color()
+
+    defparsec :rule,
+      container
+      |> times(contained, min: 1)
+      |> ignore(string("."))
+  end
+
   alias AdventOfCode.Input
   @real_input Input.raw("2020/7.txt")
 
@@ -47,53 +99,30 @@ defmodule AdventOfCode.Y2020.D7 do
     ruleset =
       input
       |> String.split("\n", trim: true)
-      |> Enum.map(&parse_rule/1)
-      |> Enum.reduce(%{}, &to_ruleset/2)
+      |> Enum.map(&Parser.rule/1)
+      |> Enum.reduce(%{}, &containers_of/2)
 
-    all_containers_of(ruleset, "shiny gold")
+    ruleset
+    |> all_containers_of("shiny gold")
     |> Enum.count()
   end
 
-  def parse_rule(rule) do
-    [container, contained] = String.split(rule, " contain ")
-    container = String.replace(container, ~r/\s*bags?/, "")
-    contained =
-      String.split(contained, ", ")
-      |> Enum.map(&String.replace(&1, ~r/\s*bags?\.?/, ""))
-      |> Enum.map(&String.replace(&1, ~r/^\d*\s*/, ""))
-
-    {container, contained}
-  end
-
-  def parse_rule_with_count(rule) do
-    [container, contained] = String.split(rule, " contain ")
-
-    container = String.replace(container, ~r/\s*bags?/, "")
-
-    contained =
-      String.split(contained, ", ")
-      |> Enum.reject(fn c -> String.starts_with?(c, "no other") end)
-      |> Enum.map(&String.replace(&1, ~r/\s*bags?\.?/, ""))
-      |> Enum.map(fn c ->
-        [count, color] = String.split(c, " ", parts: 2)
-        {color, String.to_integer(count)}
-      end)
-
-    {container, contained}
-  end
-
-  def to_ruleset({container, contained}, acc) do
+  def containers_of({:ok, [container | contained], _, _, _, _}, acc) do
     contained
-    |> Enum.reduce(acc, fn color, acc_ ->
-      {_, updated} =
-        Map.get_and_update(acc_, color, fn
-          nil ->
-            {nil, [container]}
-          containers ->
-            {containers, [container | containers]}
-        end)
+    |> Enum.reduce(acc, fn
+      "no other bags", acc_ ->
+        acc_
 
-      updated
+      [_count, color], acc_ ->
+        {_, updated} =
+          Map.get_and_update(acc_, color, fn
+            nil ->
+              {nil, [container]}
+            containers ->
+              {containers, [container | containers]}
+          end)
+
+        updated
     end)
   end
 
@@ -138,12 +167,34 @@ defmodule AdventOfCode.Y2020.D7 do
   In this example, a single shiny gold bag must contain 126 other bags.
   """
 
+  def contained_by({:ok, [container | contained], _, _, _, _}, acc) do
+    contained_tuples =
+      contained
+      |> Enum.reduce([], fn
+        "no other bags", acc_ ->
+          acc_
+
+        [count, color], acc_ ->
+          [{count, color} | acc_]
+      end)
+
+    {_, updated} =
+      Map.get_and_update(acc, container, fn
+        nil ->
+          {nil, contained_tuples}
+        existing ->
+          {existing, existing ++ contained_tuples}
+      end)
+
+    updated
+  end
+
   def solution2(input) do
     ruleset =
       input
       |> String.split("\n", trim: true)
-      |> Enum.map(&parse_rule_with_count/1)
-      |> Enum.into(%{})
+      |> Enum.map(&Parser.rule/1)
+      |> Enum.reduce(%{}, &contained_by/2)
 
     count_contained(ruleset, "shiny gold")
   end
@@ -155,12 +206,12 @@ defmodule AdventOfCode.Y2020.D7 do
 
     direct_count =
       direct
-      |> Enum.map(&elem(&1, 1))
+      |> Enum.map(&elem(&1, 0))
       |> Enum.sum
 
     indirect_count =
       direct
-      |> Enum.map(fn {color, count} ->
+      |> Enum.map(fn {count, color} ->
         count_contained(ruleset, color) * count
       end)
       |> Enum.sum
