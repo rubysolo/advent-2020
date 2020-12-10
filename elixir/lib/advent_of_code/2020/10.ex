@@ -101,14 +101,15 @@ defmodule AdventOfCode.Y2020.D10 do
   @real_input Input.list_of_integers("2020/10.txt")
 
   def solution1(input) do
-    {ones, threes} =
+    %{1 => ones, 3 => threes} =
       [0 | input]
       |> Enum.sort()
       |> Enum.chunk_every(2, 1, :discard)
       |> Enum.map(fn [a, b] -> b - a end)
-      |> Enum.partition(fn x -> x == 1 end)
+      |> Enum.concat([3])
+      |> Enum.frequencies()
 
-    Enum.count(ones) * (Enum.count(threes) + 1)
+    ones * threes
   end
 
   @doc """
