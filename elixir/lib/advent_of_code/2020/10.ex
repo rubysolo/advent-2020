@@ -207,7 +207,6 @@ defmodule AdventOfCode.Y2020.D10 do
   end
 
   def sample_input do
-    # copy/pasta here
     [
       16,
       10,

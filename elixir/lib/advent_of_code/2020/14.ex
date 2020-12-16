@@ -199,7 +199,6 @@ defmodule AdventOfCode.Y2020.D14 do
   def execute_instruction2({:write, address, value}, state) do
     address
     |> mask2(state.mask)
-    |> IO.inspect(label: "addrs")
     |> Enum.reduce(state, & Map.put(&2, &1, value))
   end
 

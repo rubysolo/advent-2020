@@ -39,6 +39,7 @@ defmodule AdventOfCode.Y2020.D11Test do
       assert D11.solution2(D11.full) == 26
     end
 
+    @tag :skip
     test "works for real input" do
       assert D11.solution2(D11.real_input) == 2100
     end

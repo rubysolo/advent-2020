@@ -50,7 +50,6 @@ defmodule AdventOfCode.Y2020.D3 do
   end
 
   def sample_input do
-    # copy/pasta here
     [
       "..##.......",
       "#...#...#..",
