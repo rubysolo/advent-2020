@@ -20,6 +20,7 @@ defmodule AdventOfCode.Y2020.D16Test do
       }
     end
 
+    @tag :skip
     test "works for real input" do
       assert D16.solution2(D16.real_input) == 0
     end

@@ -19,7 +19,7 @@ defmodule AdventOfCode.Y2020.D14Test do
     end
 
     test "works for real input" do
-      assert D14.solution2(D14.real_input) == 0
+      assert D14.solution2(D14.real_input) == 4197941339968
     end
   end
 end

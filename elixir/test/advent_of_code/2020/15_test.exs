@@ -14,6 +14,7 @@ defmodule AdventOfCode.Y2020.D15Test do
       assert D15.solution1("3,1,2") == 1836
     end
 
+    @tag :skip
     test "works for real input" do
       assert D15.solution1(D15.real_input) == 421
     end
@@ -31,6 +32,7 @@ defmodule AdventOfCode.Y2020.D15Test do
       # assert D15.solution2("3,1,2") == 362
     end
 
+    @tag :skip
     test "works for real input" do
       assert D15.solution2(D15.real_input) == 0
     end
